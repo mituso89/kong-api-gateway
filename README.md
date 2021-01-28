@@ -58,34 +58,20 @@ curl http://localhost:8001
 
 ![The KongA register](Register.png)
 
-## Create a Service Proxy
-
-Now, create a local service named ***ip-service*** that will forward requests to the [Big Cloud Data API](https://www.bigdatacloud.com/). This is a two part process as both the service  and then the route must be established like so:
-
-```
-curl -i -X POST --url http://localhost:8001/services/ --data 'name=ip-service' --data 'url=https://api.bigdatacloud.net/'
-curl -i -X POST --url http://localhost:8001/services/ip-service/routes --data 'hosts[]=ip-service'
-```
-
-You can now test both the plubic API and the proxied service using cURL:
-```
-curl https://api.bigdatacloud.net/data/client-ip
-curl http://localhost:8000/data/client-ip --header 'Host: ip-service'
-```
 
 ## Create a Microservice Endpoint
 
 Following the recipe above, we can build an endpoint for the Node.js microservice:
 
 ```
-curl -i -X POST --url http://localhost:8001/services/ --data 'name=time-service' --data 'url=http://kong-app:3000'
-curl -i -X POST --url http://localhost:8001/services/time-service/routes --data 'hosts[]=time-service'
+curl -i -X POST --url http://localhost:8001/services/ --data 'name=time-api' --data 'url=http://kong-app:3001'
+curl -i -X POST --url http://localhost:8001/services/time-api/routes --data 'hosts[]=time-api'
 ```
 
-Recall that this service is running in the *kong-app* container and is exposed to the isolated Docker network via port 3000 but callers cannot access it without going through the API gateway. We can reach the ***time-service*** using the *Host* header:
+Recall that this service is running in the *kong-app* container and is exposed to the isolated Docker network via port 3001 but callers cannot access it without going through the API gateway. We can reach the ***time-api*** using the *Host* header:
 
 ```
-curl http://localhost:8000 --header 'Host: time-service'
+curl http://localhost:8000 --header 'Host: time-api'
 ```
 
 Use this endpoint to see a list of all the services enabled thus far:
@@ -96,33 +82,34 @@ curl http://localhost:8001/services
 
 ## Enable Rate Limiting
 
-Added rate limiting (a maximum of 5 requests per minute in this case) to a service is as simple as running a single command:
+Added rate limiting
 
 ```
-curl -X POST http://localhost:8001/services/time-service/plugins/ --data "name=rate-limiting" --data "config.minute=5" --data "config.policy=local"
+curl -X POST http://localhost:8001/services/time-api/plugins/ --data "name=rate-limiting" --data "config.minute=5" --data "config.policy=local"
 ```
 
-If you hit the *time-service* endpoint again, you will see additional headers in the response indicating the rate limit and usage:
+If you hit the *time-api* endpoint again, you will see additional headers in the response indicating the rate limit and usage:
 
+test
 ```
-curl http://localhost:8000 --header 'Host: time-service'
+curl http://localhost:8000 --header 'Host: time-api'
 ```
 
 ## Add Authorization
 
-Key-based authorization can be add to the *time-service* endpoint by enabling the ***key-auth*** plugin, creating a user (*QA* in this example) and then providing the access key:
+Key-based authorization can be add to the *time-api* endpoint by enabling the ***key-auth*** plugin, creating a user (*QA* in this example) and then providing the access key:
 
 ```
-curl -i -X POST --url http://localhost:8001/services/time-service/plugins/ --data 'name=key-auth'
+curl -i -X POST --url http://localhost:8001/services/time-api/plugins/ --data 'name=key-auth'
 curl -i -X POST --url http://localhost:8001/consumers/ --data "username=QA"
 curl -i -X POST --url http://localhost:8001/consumers/QA/key-auth/ --data 'key=Hello_Kong!'
 ```
 
-Test the *time-service* endpoint both with and without specifying an API key:
+Test the *time-api* endpoint both with and without specifying an API key:
 
 ```
-curl http://localhost:8000 --header 'Host: time-service'
-curl http://localhost:8000 --header 'Host: time-service' --header "apikey: Hello_Kong!"
+curl http://localhost:8000 --header 'Host: time-api'
+curl http://localhost:8000 --header 'Host: time-api' --header "apikey: Hello_Kong!"
 ```
 
 ## Conclusion
