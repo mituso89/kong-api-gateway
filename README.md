@@ -1,41 +1,40 @@
-# Kong Demo Using Docker
-This is a demo of the [Kong API Gateway](https://konghq.com/) which exhibits how to run Kong in a Docker environment as a proxy for a public web service as well as a Node.js microservice.
+# Kong Demo using docker compose
+This is a demo of the [Kong API Gateway](https://konghq.com/) which best practice as a proxy for a public web service as well
 
 ## Requirements
-  - Linux, macOS, Windows (tested on Windows 10)
+  - Linux, macOS, Windows 10
   - [Docker](https://www.docker.com)
+  - [Docker Compose](https://docs.docker.com/compose/):
+  
 
-## Installation
-In a terminal window, clone this repository:
+## Git clone
 
 ```
-https://github.com/trevorkennedy/kong_docker_demo
+https://github.com/mituso89/kong-api-gateway.git
 ```
 
 ## Running
 
-Change to your local repo directory:
 
 ```
 cd kong_docker_demo
 ```
 
-Start the demo using [Docker Compose](https://docs.docker.com/compose/):
+Start the demo:
 
 ```
 docker-compose up -d  
 ```
 
-Note that the ***-d*** flag will running the containers as a background process.  The compose file does 4 things: 
+The compose file does 5 things: 
 
-1.  Creates PostgreSQL container as a backend data store (configuration info) for Kong .
-2.  Creates an ephemeral to initialize the Postgres database.
-3.  Builds a container for the system time Node.js microservice.
+1.  Creates PostgreSQL for store data .
+2.  Init data to Postgress.
+3.  Builds anodejs container
 4.  Runs the Kong API Gateway as a container.
+5.  Runs the Konga as a container.
 
 ## Verify
-
-Verify the containers (*kong-api, kong-db, kong-app*) are all running by using:
 
 ```
 docker ps
@@ -47,6 +46,17 @@ Verify that the Kong Gateway and Admin API are responding:
 curl http://localhost:8000
 curl http://localhost:8001
 ```
+
+## login KongA
+
+- we go to Konga (port 1337) to start using Kong using the browser and go to http://localhost:1337. Konga will ask us to create an account
+
+![The KongA](Kongadmin.png)
+
+
+- After creating an account and logging in, the first thing we need to do is connect Konga to Kong Server through Kong Admin. For this we will have to use the local network address of the machine we are using instead of localhost because Konga is being run in the Docker container. To check the address of the host, we can use the ifconfig command (with Unix, nettools installed).
+
+![The KongA register](Register.png)
 
 ## Create a Service Proxy
 
