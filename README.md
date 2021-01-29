@@ -17,7 +17,8 @@ https://github.com/mituso89/kong-api-gateway.git
 
 
 ```
-cd kong_docker_demo
+cd kong-api-gateway
+
 ```
 
 Start the demo:
