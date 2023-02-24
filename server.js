@@ -6,7 +6,6 @@ const express = require('express');
 const PORT = 3001;
 const HOST = '0.0.0.0';
 
-// App
 const app = express();
 app.get('/', function (req, res) {
 	// Return current system time
